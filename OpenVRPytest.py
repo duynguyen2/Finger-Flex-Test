@@ -1,3 +1,5 @@
+# this code will be removed later on as we progress
+# this program is just the python version of OpenVR, which steam uses to open SteamVR and detect VR hardware, regardless of brand
 import sys
 import time
 import openvr

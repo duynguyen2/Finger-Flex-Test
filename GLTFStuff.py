@@ -1,16 +1,101 @@
+# this code will be removed later on as we progress
+# all this code is from https://pypi.org/project/pygltflib/, this is merely for testing and seeing what it actually does
 from pygltflib import GLTF2
+from pygltflib.utils import glb2gltf, gltf2glb
 
 # convert glb to gltf
-glb = GLTF2.load("glTF-Sample-Models/2.0/Box/glTF-Binary/Box.glb")
-glb.save("test.gltf")
+glb2gltf("Finger-Flex-Test/glTF-Sample-Models/2.0/Box/glTF-Binary/Box.glb")
 
 # convert gltf to glb
-gltf = GLTF2.load("glTF-Sample-Models/2.0/Box/glTF/Box.gltf")
-gltf.save("test.glb")
+gltf2glb("Finger-Flex-Test/glTF-Sample-Models/2.0/Box/glTF/Box.gltf", "something.glb", override=True)
+
+# from pygltflib import GLTF2, Scene
+
+# filename = "Finger-Flex-Test/glTF-Sample-Models/2.0/AnimatedCube/glTF/AnimatedCube.gltf"
+# gltf = GLTF2().load(filename)
+# gltf.scene
+# gltf.scenes
+# gltf.nodes[0]
+# gltf.nodes[0].name
+# gltf.meshes
+# gltf.meshes[0].primitives[0].attributes
+
+# filename2 = "test2.gltf"
+# gltf.save(filename2)
+
+# glb_filename = "Finger-Flex-Test/glTF-Sample-Models/2.0/Box/glTF-Binary/Box.glb"
+# glb = GLTF2().load(glb_filename)
+# glb.scene
+# glb.scenes
+# glb.nodes[0]
+# glb.meshes[0].primitives[0].attributes
+# glb.save("test2.glb")
+# glb.binary_blob()
+
+# from pygltflib import GLTF2
+
+# # convert glb to gltf
+# glb = GLTF2.load("Finger-Flex-Test/glTF-Sample-Models/2.0/Box/glTF-Binary/Box.glb")
+# glb.save("test.gltf")
+
+# # convert gltf to glb
+# gltf = GLTF2.load("Finger-Flex-Test/glTF-Sample-Models/2.0/Box/glTF/Box.gltf")
+# gltf.save("Finger-Flex-Test/test.glb")
 
 
 # import numpy as np
 # import pygltflib
+
+# gltf = pygltflib.GLTF2(
+#     scene=0,
+#     scenes=[pygltflib.Scene(nodes=[0])],
+#     nodes=[pygltflib.Node(mesh=0)],
+#     meshes=[
+#         pygltflib.Mesh(
+#             primitives=[
+#                 pygltflib.Primitive(
+#                     attributes=pygltflib.Attributes(POSITION=1), indices=0
+#                 )
+#             ]
+#         )
+#     ],
+#     accessors=[
+#         pygltflib.Accessor(
+#             bufferView=0,
+#             componentType=pygltflib.UNSIGNED_BYTE,
+#             count=36,
+#             type=pygltflib.SCALAR,
+#             max=[7],
+#             min=[0],
+#         ),
+#         pygltflib.Accessor(
+#             bufferView=1,
+#             componentType=pygltflib.FLOAT,
+#             count=8,
+#             type=pygltflib.VEC3,
+#             max=[0.5, 0.5, 0.5],
+#             min=[-0.5, -0.5, -0.5],
+#         ),
+#     ],
+#     bufferViews=[
+#         pygltflib.BufferView(
+#             buffer=0, byteLength=36, target=pygltflib.ELEMENT_ARRAY_BUFFER
+#         ),
+#         pygltflib.BufferView(
+#             buffer=0, byteOffset=36, byteLength=96, target=pygltflib.ARRAY_BUFFER
+#         ),
+#     ],
+#     buffers=[pygltflib.Buffer(byteLength=132)],
+# )
+# gltf.set_binary_blob(
+#     b"\x00\x01\x02\x03\x02\x01\x01\x00\x04\x05\x04\x00\x03\x01\x06\x04\x06\x01"
+#     b"\x02\x03\x07\x06\x07\x03\x00\x02\x05\x07\x05\x02\x05\x07\x04\x06\x04\x07"
+#     b"\x00\x00\x00\xbf\x00\x00\x00\xbf\x00\x00\x00?\x00\x00\x00?\x00\x00\x00"
+#     b"\xbf\x00\x00\x00?\x00\x00\x00\xbf\x00\x00\x00?\x00\x00\x00?\x00\x00\x00?"
+#     b"\x00\x00\x00?\x00\x00\x00?\x00\x00\x00?\x00\x00\x00\xbf\x00\x00\x00\xbf"
+#     b"\x00\x00\x00\xbf\x00\x00\x00\xbf\x00\x00\x00\xbf\x00\x00\x00?\x00\x00"
+#     b"\x00?\x00\x00\x00\xbf\x00\x00\x00\xbf\x00\x00\x00?\x00\x00\x00\xbf"
+# )
 
 # points = np.array(
 #     [
