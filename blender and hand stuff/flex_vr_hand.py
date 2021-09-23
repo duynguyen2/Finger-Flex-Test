@@ -1,6 +1,7 @@
 # this is the code to interface with the Arduino using the serial module, which requires uses code from the Arduino software uploaded to the board
 # anytime we use the sleep method, that is to give it time to get all the information properly
 # to run, use start debugging, if it stops, there's something happening that i'm unsure of or the circuit needs re-adjusting
+import bpy
 import serial
 import time
 

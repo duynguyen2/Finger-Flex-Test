@@ -1,4 +1,7 @@
 # this code will be edited as more physical components comes in
+# this file uses pyfirmata, which you need to download and upload the firmata code using Arduino software to use
+# we will try to avoid using this unless something comes up as this does not work properly for now
+# pyfirmata lets us code the Arduino with just python
 import pyfirmata
 import time
 
