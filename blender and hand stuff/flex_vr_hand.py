@@ -1,59 +1,69 @@
 # this is the code to interface with the Arduino using the serial module, which requires uses code from the Arduino software uploaded to the board
-# anytime we use the sleep method, that is to give it time to get all the information properly
 # to run, use start debugging, if it stops, there's something happening that i'm unsure of or the circuit needs re-adjusting
+# currently, all 3 flex sensors interact with the index finger of the hand model
+# STATUS: does not work properly as the finger starts at inconsistent positions, but the flex sensors properly move their respective component
+# TODO: optimize the code, whether it is the Arduino code or this blender code to run faster, properly interface them
 import bpy
+import math
 import serial
 import time
 
 # initialize the arduino to connect
 # COM3 is the port for Duy's Arduino, change to yours accordingly as it may be different
-# possibly may change this so that a user may input the com port
+# possibly may change this so that a user may input the COM port
 # baudrate is the rate of speed that data is being sent, set it whatever you like as long as it matches the Arduino code
-arduinoUno = serial.Serial('COM3', baudrate = 19200)
-time.sleep(0.4)
+arduinoUno = serial.Serial('COM3', baudrate = 115200, timeout = 1)
+time.sleep(3)
+arduinoUno.write(b'READ VALUES\n')
 
-# flush will clear any inputs or data left on the serial port
-# clearing anything left on the serial port from before
-arduinoUno.flushInput()
-time.sleep(0.5)
+# collect the the armatures, other helper variables
+hand = bpy.data.objects['Armature']
+bpy.ops.object.mode_set(mode = 'POSE')
 
-# infinitely checks for flex sensor values from the Arduino and stores them into variables for use
-#
-while True:
+# setting limits for the finger to bend and scaling it to match the actual bend
+lowerLimit = [0, 0, 0]
+higherLimit = [1023, 1023, 1023]
+actuationAngle = [500, 500, 500]
 
-    # flush inputs, so we reset inputs everytime and don't keep the same values from previous runs
-    arduinoUno.flushInput()
-    time.sleep(0.5)
+# setting the axes the finger should rotate in
+axis = ['X', 'X', 'X']
 
-    # takes each line printed to the serial port, from the arduino code uploaded on the board, and puts it into a variables for resistance
-    inputs = arduinoUno.readline().decode('utf-8').strip()
-    inputs = inputs.split()
+# creating an array for each phalanx to change them based on index (rather than making 3 separate variables)
+fingerBones = [
+    hand.pose.bones['indexProximal'],
+    hand.pose.bones['indexMiddle'],
+    hand.pose.bones['indexDistal']
+]
 
-    # converts the data from the Arduino to data types for python, variable names are subject to change to fit our project
-    flex1 = float(inputs[0])
-    flex2 = float(inputs[1])
-    flex3 = float(inputs[2])
+# set the rotation mode
+for bone in range(3):
+    fingerBones[bone].rotation_mode = 'XYZ'
 
-    angle1 = float(inputs[3])
-    angle2 = float(inputs[4])
-    angle3 = float(inputs[5])
+# array to store the last value
+last = [0, 0, 0]
 
-    # these prints are to test that they properly are stored as floating points
-    print(flex1)
-    print(flex2)
-    print(flex3)
-    print(angle1)
-    print(angle2)
-    print(angle3)
-    print()
+# this loop takes the values from the Arduino, scales them to a way to bend the finger
+for x in range(3):
+    for y in range(100):
+        # send a signal to the Arduino to retrieve values from the flex sensors
+        arduinoUno.write(b'READ VALUES\n')
+        inputs = arduinoUno.readline()
+        print(inputs)
+        decodedInputs = inputs.decode().split(' ')
+        
+        # calculate the values and normalize them
+        for bone in range(3):
+            extractedValue = float(decodedInputs[bone].rstrip())
+            current = ((higherLimit[bone] - extractedValue) * actuationAngle[bone] / (higherLimit[bone] - lowerLimit[bone]))
+            if(current < 0):
+                current = 0
+            
+            # rotate the bones based on their respective flex sensor and store the last value
+            fingerBones[bone].rotation_euler.rotate_axis(axis[bone], math.radians(current - last[bone]))
+            last[bone] = current
+            
+        # redraw the model in the window
+        bpy.ops.wm.redraw_timer(type = 'DRAW_WIN_SWAP', iterations = 1)
 
-    # print the data
-    print("Resistance 1: " +  str(flex1))
-    print("Resistance 2: " +  str(flex2))
-    print("Resistance 3: " +  str(flex3))
-    print("Bend 1: " + str(angle1))
-    print("Bend 2: " + str(angle2))
-    print("Bend 3: " + str(angle3))
-    print()
-
-    time.sleep(0.5)
+bpy.ops.wm.redraw_timer(type = 'DRAW_WIN_SWAP', iterations = 1)
+arduinoUno.close()
