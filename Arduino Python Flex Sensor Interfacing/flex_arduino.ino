@@ -1,3 +1,9 @@
+/*
+ * This is code to upload to the arduino board and test the flex sensors, works with ArduinoSerial.py
+ * Ensure the baudrate matches on both here and Python
+ */
+
+
 /******************************************************************************
 Flex_Sensor_Example.ino
 Example sketch for SparkFun's flex sensors
@@ -14,6 +20,8 @@ voltage at A0 should decrease.
 Development environment specifics:
 Arduino 1.6.7
 ******************************************************************************/
+
+//1 is the proximal phalanx, 2 is middle and 3 is distal
 const int FLEX_PIN1 = A0; // Pin connected to voltage divider output
 const int FLEX_PIN2 = A1; // Pin connected to voltage divider output
 const int FLEX_PIN3 = A3; // Pin connected to voltage divider output
@@ -37,7 +45,7 @@ const float BEND_RESISTANCE3 = 73600.0; // resistance at 90 deg
 
 void setup() 
 {
-  Serial.begin(9600);
+  Serial.begin(19200);
   pinMode(FLEX_PIN1, INPUT);
   pinMode(FLEX_PIN2, INPUT);
   pinMode(FLEX_PIN3, INPUT);
@@ -54,26 +62,26 @@ void loop()
   float flexV2 = flexADC2 * VCC / 1023.0;
   float flexV3 = flexADC3 * VCC / 1023.0;
   
-  float flexR1 = R_DIV1 * (VCC / flexV1 - 1.0);
-  float flexR2 = R_DIV2 * (VCC / flexV2 - 1.0);
-  float flexR3 = R_DIV3 * (VCC / flexV3 - 1.0);
+  float PROXIMAL = R_DIV1 * (VCC / flexV1 - 1.0);
+  float MIDDLE = R_DIV2 * (VCC / flexV2 - 1.0);
+  float DISTAL = R_DIV3 * (VCC / flexV3 - 1.0);
 
   // Use the calculated resistance to estimate the sensor's
   // bend angle:
-  float angle1 = map(flexR1, STRAIGHT_RESISTANCE1, BEND_RESISTANCE1,
+  float angleProxmial = map(PROXIMAL, STRAIGHT_RESISTANCE1, BEND_RESISTANCE1,
                    0, 90.0);
-  float angle2 = map(flexR2, STRAIGHT_RESISTANCE2, BEND_RESISTANCE2,
+  float angleMiddle = map(MIDDLE, STRAIGHT_RESISTANCE2, BEND_RESISTANCE2,
                    0, 90.0);
-  float angle3 = map(flexR3, STRAIGHT_RESISTANCE3, BEND_RESISTANCE3,
+  float angleDistale = map(DISTAL, STRAIGHT_RESISTANCE3, BEND_RESISTANCE3,
                    0, 90.0);
-  
-  Serial.println("Resistance1: " + String(flexR1) + " ohms");
-  Serial.println("Resistance2: " + String(flexR2) + " ohms");
-  Serial.println("Resistance3: " + String(flexR3) + " ohms");
 
-  Serial.println("Bend 1: " + String(angle1) + " degrees");
-  Serial.println("Bend 2: " + String(angle2) + " degrees");
-  Serial.println("Bend 3: " + String(angle3) + " degrees");
+  //printing values onto the serial, using spaces to separate them
+  Serial.print(PROXIMAL);
+  Serial.print(" "); Serial.print(MIDDLE);
+  Serial.print(" "); Serial.print(DISTAL);
+  Serial.print(" "); Serial.print(angleProxmial);
+  Serial.print(" "); Serial.print(angleMiddle);
+  Serial.print(" "); Serial.print(angleDistale);
   Serial.println();
 
   delay(500);

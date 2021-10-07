@@ -1,8 +1,8 @@
 # this is the code to interface with the Arduino using the serial module, which requires uses code from the Arduino software uploaded to the board
 # to run, use start debugging, if it stops, there's something happening that i'm unsure of or the circuit needs re-adjusting
 # currently, all 3 flex sensors interact with the index finger of the hand model
-# STATUS: does not work properly as the finger starts at inconsistent positions, but the flex sensors properly move their respective component
-# TODO: optimize the code, whether it is the Arduino code or this blender code to run faster, properly interface them
+# STATUS: works properly on the first run, continuous runs will vary
+# TODO: maybe optimize depending on future plans
 import bpy
 import math
 import serial
@@ -14,7 +14,15 @@ import time
 # baudrate is the rate of speed that data is being sent, set it whatever you like as long as it matches the Arduino code
 arduinoUno = serial.Serial('COM3', baudrate = 115200, timeout = 1)
 time.sleep(3)
-arduinoUno.write(b'READ VALUES\n')
+
+# arduinoUno.write(b'READ VALUES\n')
+# inputs = arduinoUno.readline()
+# decodedInputs = inputs.decode().split(' ')
+# last = [
+#     float(decodedInputs[0].rstrip()),
+#     float(decodedInputs[1].rstrip()),
+#     float(decodedInputs[2].rstrip()),
+# ]
 
 # collect the the armatures, other helper variables
 hand = bpy.data.objects['Armature']
@@ -23,7 +31,7 @@ bpy.ops.object.mode_set(mode = 'POSE')
 # setting limits for the finger to bend and scaling it to match the actual bend
 lowerLimit = [0, 0, 0]
 higherLimit = [1023, 1023, 1023]
-actuationAngle = [500, 500, 500]
+actuationAngle = [360, 360, 360]
 
 # setting the axes the finger should rotate in
 axis = ['X', 'X', 'X']
