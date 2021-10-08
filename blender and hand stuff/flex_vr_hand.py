@@ -12,17 +12,8 @@ import time
 # COM3 is the port for Duy's Arduino, change to yours accordingly as it may be different
 # possibly may change this so that a user may input the COM port
 # baudrate is the rate of speed that data is being sent, set it whatever you like as long as it matches the Arduino code
-arduinoUno = serial.Serial('COM3', baudrate = 115200, timeout = 1)
-time.sleep(3)
-
-# arduinoUno.write(b'READ VALUES\n')
-# inputs = arduinoUno.readline()
-# decodedInputs = inputs.decode().split(' ')
-# last = [
-#     float(decodedInputs[0].rstrip()),
-#     float(decodedInputs[1].rstrip()),
-#     float(decodedInputs[2].rstrip()),
-# ]
+arduinoUno = serial.Serial('COM3', baudrate = 115200)
+time.sleep(2)
 
 # collect the the armatures, other helper variables
 hand = bpy.data.objects['Armature']
@@ -51,27 +42,26 @@ for bone in range(3):
 last = [0, 0, 0]
 
 # this loop takes the values from the Arduino, scales them to a way to bend the finger
-for x in range(3):
-    for y in range(100):
-        # send a signal to the Arduino to retrieve values from the flex sensors
-        arduinoUno.write(b'READ VALUES\n')
-        inputs = arduinoUno.readline()
-        print(inputs)
-        decodedInputs = inputs.decode().split(' ')
+for x in range(150):
+    # send a signal to the Arduino to retrieve values from the flex sensors
+    arduinoUno.write(b'READ\n')
+    inputs = arduinoUno.readline()
+    print(inputs)
+    decodedInputs = inputs.decode().split(' ')
+    
+    # calculate the values and normalize them
+    for bone in range(3):
+        extractedValue = float(decodedInputs[bone].rstrip())
+        current = ((higherLimit[bone] - extractedValue) * actuationAngle[bone] / (higherLimit[bone] - lowerLimit[bone]))
+        if(current < 0):
+            current = 0
         
-        # calculate the values and normalize them
-        for bone in range(3):
-            extractedValue = float(decodedInputs[bone].rstrip())
-            current = ((higherLimit[bone] - extractedValue) * actuationAngle[bone] / (higherLimit[bone] - lowerLimit[bone]))
-            if(current < 0):
-                current = 0
-            
-            # rotate the bones based on their respective flex sensor and store the last value
-            fingerBones[bone].rotation_euler.rotate_axis(axis[bone], math.radians(current - last[bone]))
-            last[bone] = current
-            
-        # redraw the model in the window
-        bpy.ops.wm.redraw_timer(type = 'DRAW_WIN_SWAP', iterations = 1)
+        # rotate the bones based on their respective flex sensor and store the last value
+        fingerBones[bone].rotation_euler.rotate_axis(axis[bone], math.radians(current - last[bone]))
+        last[bone] = current
+        
+    # redraw the model in the window
+    bpy.ops.wm.redraw_timer(type = 'DRAW_WIN_SWAP', iterations = 1)
 
 bpy.ops.wm.redraw_timer(type = 'DRAW_WIN_SWAP', iterations = 1)
 arduinoUno.close()
