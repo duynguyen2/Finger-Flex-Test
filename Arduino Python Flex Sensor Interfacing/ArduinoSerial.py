@@ -48,13 +48,13 @@ while True:
         angle3 = float(inputs[5])
 
         # these prints are to test that they properly are stored as floating points
-        # print(flex1)
-        # print(flex2)
-        # print(flex3)
-        # print(angle1)
-        # print(angle2)
-        # print(angle3)
-        # print()
+        print(flex1)
+        print(flex2)
+        print(flex3)
+        print(angle1)
+        print(angle2)
+        print(angle3)
+        print()
 
         # print the data
         dataFloat = [flex1, flex2, flex3, angle1, angle2, angle3]
